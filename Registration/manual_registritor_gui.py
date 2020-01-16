@@ -95,7 +95,7 @@ def select_correspondence():
 # save
 def save_correspondence():
     if g_crt_match1 == (0, 0) or g_crt_match2 == (0, 0):
-        print('wrong')
+        print('wrong operation.')
     else:
         global g_corres_l1
         global g_corres_l2

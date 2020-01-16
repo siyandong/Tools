@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Kabsch:
 
 	# A[i] and B[i] should be correspondences.
@@ -61,26 +62,4 @@ class Kabsch:
 				Rt[i,j] = R[i,j]
 			Rt[i, self.dim] = t[i]
 		Rt[self.dim, self.dim] = 1.
-		#print('R\n', R)
-		#print('t\n', t)
-		#print('Rt\n', Rt)
 		return Rt
-
-'''# test	
-A = []
-B = []
-dim = 3
-v_num = 100
-angle = np.pi/3
-gt_R = np.array([[np.cos(angle), -np.sin(angle), 0],[np.sin(angle), np.cos(angle), 0], [0, 0, 1]])
-gt_t = np.random.rand(dim)
-for i in range(v_num):
-	A.append(np.random.rand(dim))
-for i in range(v_num):
-	B.append(np.dot(gt_R, A[i])+gt_t)
-kab = Kabsch(A, B)
-R, t = kab.solve_R_t()
-for i in range(v_num):
-	print('A[i]\n', A[i])
-	print('np.dot(R, B[i])\n', np.dot(R, B[i])+t)
-#'''

@@ -1,4 +1,4 @@
-# rgbd calib for 7-scenes.
+# rgbd calib for 7-scenes dataset.
 import numpy as np
 import cv2 # to calibrate
 
