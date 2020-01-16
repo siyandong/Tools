@@ -100,8 +100,8 @@ def draw_merged_pc(pc1, pc2):
 def draw_merged_pc_color(pc1, pc2):
     fig = plt.figure()
     ax = Axes3D(fig)
-    ax.scatter(pc1[:,0], pc1[:,1], pc1[:,2], s=6., c=pc1[:,3:6], label='pc1')
-    ax.scatter(pc2[:,0], pc2[:,1], pc2[:,2], s=6., c=pc2[:,3:6], label='pc2')
+    ax.scatter(pc1[:,0], pc1[:,1], pc1[:,2], s=6., c=pc1[:,3:6], marker='+', label='pc1')
+    ax.scatter(pc2[:,0], pc2[:,1], pc2[:,2], s=6., c=pc2[:,3:6], marker='o', label='pc2')
     ax.legend(loc='best')
     plt.show()
     return
