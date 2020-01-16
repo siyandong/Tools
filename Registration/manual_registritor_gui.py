@@ -61,6 +61,25 @@ def generate_pc(img_depth, sample_step=16, Rt=np.eye(4, dtype=float)):
             l_p3d.append(p3d)
     return l_p3d
 
+# generate pointcloud from depth and pose
+def generate_pc_color(img_depth, img_color, sample_step=16, Rt=np.eye(4, dtype=float)):
+    l_p3d = []
+    for r in range(0, img_depth.shape[0], sample_step):
+        for c in range(0, img_depth.shape[1], sample_step):
+            depth = img_depth[r,c]
+            if depth==0 or depth==65535:
+                continue
+            if depth>5000:
+                print('depth', depth)
+            z = depth / g_camera_factor
+            x = float(c-g_cx) * z / g_fx
+            y = float(r-g_cy) * z / g_fy
+            p3d = np.array([x, y, z, 1.0])
+            p3d = np.dot(Rt, p3d)
+            color = img_color[r, c]/255.
+            l_p3d.append(np.array([p3d[0], p3d[1], p3d[2], color[2], color[1], color[0]]))
+    return l_p3d
+
 # result visualization
 def draw_merged_pc(pc1, pc2):
     x1 = pc1[:, 0]  
@@ -69,11 +88,20 @@ def draw_merged_pc(pc1, pc2):
     x2 = pc2[:, 0]
     y2 = pc2[:, 1]
     z2 = pc2[:, 2]
-    #
     fig = plt.figure()
     ax = Axes3D(fig)
     ax.scatter(x1, y1, z1, s=6., c='r', label='pc1')
     ax.scatter(x2, y2, z2, s=6., c='b', label='pc1')
+    ax.legend(loc='best')
+    plt.show()
+    return
+
+# result visualization
+def draw_merged_pc_color(pc1, pc2):
+    fig = plt.figure()
+    ax = Axes3D(fig)
+    ax.scatter(pc1[:,0], pc1[:,1], pc1[:,2], s=6., c=pc1[:,3:6], label='pc1')
+    ax.scatter(pc2[:,0], pc2[:,1], pc2[:,2], s=6., c=pc2[:,3:6], label='pc2')
     ax.legend(loc='best')
     plt.show()
     return
@@ -118,17 +146,17 @@ def solve_Rt():
         return
     global g_R, g_t
     kab = Kabsch(g_p3d_l1, g_p3d_l2)
-    g_R, g_t = kab.solve_R_t()
-    #
+    g_R, g_t = kab.solve_R_t() # solve
     Rt = np.zeros((4, 4))
-    for i in range(3):
-        for j in range(3):
-            Rt[i,j] = g_R[i,j]
-        Rt[i, 3] = g_t[i]
+    Rt[0:3, 0:3] = g_R
+    Rt[0:3, 3] = g_t
     Rt[3, 3] = 1.
-    lp3d1 = np.array(generate_pc(g_depth_img1))
-    lp3d2 = np.array(generate_pc(g_depth_img2, Rt=Rt))
-    draw_merged_pc(lp3d1, lp3d2)
+    #lp3d1 = np.array(generate_pc(g_depth_img1))
+    #lp3d2 = np.array(generate_pc(g_depth_img2, Rt=Rt))
+    #draw_merged_pc(lp3d1, lp3d2)
+    lp3d1 = np.array(generate_pc_color(g_depth_img1, g_color_img1))
+    lp3d2 = np.array(generate_pc_color(g_depth_img2, g_color_img2, Rt=Rt))
+    draw_merged_pc_color(lp3d1, lp3d2)
 
 # reset
 def clean_correspondences():
