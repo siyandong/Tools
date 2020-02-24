@@ -6,26 +6,31 @@ import PnP
 
 if __name__ == '__main__':
 
-	name = 'rio'
-	intrinsics_path = 'data/%s_calib.txt'%(name)
-	depth_path = 'data/%s_depth.png'%(name)
-	pose_path = 'data/%s_pose.txt'%(name)	
-	coord_path = 'data/%s_coord.npy'%(name)
-	coord_vis_path = 'data/%s_coord_vis.png'%(name)
+	name = 'rnd'
+	fid = 0
+	intrinsics_path = 'data/%s/%s_calib.txt'%(name, name)
+	depth_path = 'data/%s/%d_depth.png'%(name, fid)
+	pose_path = 'data/%s/%d_pose.txt'%(name, fid)	
+	coord_path = 'data/%s/%d_coord.npy'%(name, fid)
+	coord_vis_path = 'data/%s/%d_coord_vis.png'%(name, fid)
+	pc_path = 'data/%s/%d_pc.txt'%(name, fid)
 
 	intrinsics = np.loadtxt(intrinsics_path)
 	depth = cv2.imread(depth_path, -1)
 	if len(depth.shape)==3:
 		depth = depth[:,:,0]
+	depth = depth/1000
 	pose = np.loadtxt(pose_path)
 	image_width, image_height = depth.shape[1], depth.shape[0]
 
 	# back project to scene coordinates
 	cg = CoordGenerator.CoordGenerator(intrinsics, image_width, image_height)
 	coord, coord_vis = cg.depth_pose_2coord(depth, pose)
+	points_coord = coord.reshape(-1, 3)
 
 	np.save(coord_path, coord)
 	cv2.imwrite(coord_vis_path, coord_vis)
+	np.savetxt(pc_path, points_coord)
 
 	# solve camera pose
 	img_coord = np.load(coord_path)

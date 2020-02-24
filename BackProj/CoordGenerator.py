@@ -46,6 +46,7 @@ if __name__ == '__main__':
 
 	intrinsics = np.loadtxt(intrinsics_path)
 	depth = cv2.imread(depth_path, -1)
+	depth = depth/1000 # meter.
 	pose = np.loadtxt(pose_path)
 
 	image_width, image_height = depth.shape[1], depth.shape[0]
