@@ -6,14 +6,17 @@ import PnP
 
 if __name__ == '__main__':
 
-	intrinsics_path = 'data/syn_calib.txt'
-	depth_path = 'data/syn_depth.png'
-	pose_path = 'data/syn_pose.txt'	
-	coord_path = 'data/syn_coord.npy'
-	coord_vis_path = 'data/syn_coord_vis.png'
+	name = 'rnd'
+	intrinsics_path = 'data/%s_calib.txt'%(name)
+	depth_path = 'data/%s_depth.png'%(name)
+	pose_path = 'data/%s_pose.txt'%(name)	
+	coord_path = 'data/%s_coord.npy'%(name)
+	coord_vis_path = 'data/%s_coord_vis.png'%(name)
 
 	intrinsics = np.loadtxt(intrinsics_path)
 	depth = cv2.imread(depth_path, -1)
+	if len(depth.shape)==3:
+		depth = depth[:,:,0]
 	pose = np.loadtxt(pose_path)
 	image_width, image_height = depth.shape[1], depth.shape[0]
 
