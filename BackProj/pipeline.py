@@ -6,7 +6,7 @@ import PnP
 
 if __name__ == '__main__':
 
-	name = 'rnd'
+	name = 'rio'
 	intrinsics_path = 'data/%s_calib.txt'%(name)
 	depth_path = 'data/%s_depth.png'%(name)
 	pose_path = 'data/%s_pose.txt'%(name)	
