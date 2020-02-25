@@ -10,12 +10,12 @@ class CoordGenerator(object):
 		self.image_width = img_w
 		self.image_height = img_h
 
-	def pixel2local(self, depth): # depth: float32, meter.
-	    cx, cy, f = self.intrinsics[0, 2], self.intrinsics[1, 2], self.intrinsics[0, 0]
+	def pixel2local(self, depth): # depth: float32, meter.	
+	    cx, cy, fx, fy = self.intrinsics[0, 2], self.intrinsics[1, 2], self.intrinsics[0, 0], self.intrinsics[1, 1]
 	    u_base = np.tile(np.arange(self.image_width), (self.image_height, 1))
 	    v_base = np.tile(np.arange(self.image_height)[:, np.newaxis], (1, self.image_width))
-	    X = (u_base - cx) * depth / f
-	    Y = (v_base - cy) * depth / f
+	    X = (u_base - cx) * depth / fx
+	    Y = (v_base - cy) * depth / fy
 	    coord_camera = np.stack((X, Y, depth), axis=2)
 	    points_local = coord_camera.reshape((-1, 3), order='F') # (N, 3)
 	    return points_local
