@@ -10,6 +10,7 @@ dir_input = 'D:/data/RIO_part'
 dir_output = 'D:/data/RIO_part/siyan'
 depth_width = 224
 depth_height = 172
+generate_pc = False
 
 
 def read_pgm(path):	
@@ -45,10 +46,11 @@ def generate_coord(image_intrinsics, seq_id, f_beg, f_end, f_step=1):
 		image_width, image_height = depth.shape[1], depth.shape[0]
 		cg = CoordGenerator.CoordGenerator(image_intrinsics, image_width, image_height)
 		coord, coord_vis = cg.depth_pose_2coord(depth, pose)
-		points_coord = coord.reshape(-1, 3)
 		np.save("%s/%s/%06d_coord.npy"%(dir_output, seq_id, idx), coord)
 		#cv2.imwrite("%s/%s/%06d_coord_vis.png"%(dir_output, seq_id, idx), coord_vis)
-		#np.savetxt("%s/%s/%06d_pc.txt"%(dir_output, seq_id, idx), points_coord)
+		if generate_pc:
+			points_coord = coord.reshape(-1, 3)
+			np.savetxt("%s/%s/%06d_pc.txt"%(dir_output, seq_id, idx), points_coord)
 		#print('%03.2f %%'%((idx-f_beg)/(f_end-f_beg)*100))
 	print('done.\n')
 	return
@@ -156,14 +158,14 @@ if __name__ == '__main__':
 	# office - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - # '''
 
 
-	# kitchen - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	''' # kitchen - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	img_intrin = np.array([[177.345, 0, 112.94], [0, 241.689, 84.4557], [0, 0, 1]], dtype=np.float32)
 	# seq 1
 	seq_id = '9766cbe5-6321-2e2f-8040-4e5b7a5d8ba1'
 	g_trans = [0.34942460060119629, -0.93696218729019165, -0.0020918117370456457, 0,
 	0.93694949150085449, 0.34943076968193054, -0.0048793721944093704, 0,
 	0.0053027304820716381, -0.00025494955480098724, 0.99998587369918823, 0,
-	0.17242573201656342, -0.28566098213195801, 0.074938319623470306, 1]
+	0.17242573201656342, -0.28566098213195801, -0.074938319623470306, 1]
 	f_beg = 0
 	f_end = 847
 	g_trans = np.array(g_trans).reshape(4, 4).T
@@ -191,13 +193,73 @@ if __name__ == '__main__':
 	# kitchen - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - # '''
 
 
-	# restroom - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	
+	''' # restroom - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	img_intrin = np.array([[176.594, 0, 114.613], [0, 240.808, 85.7915], [0, 0, 1]], dtype=np.float32)
+	# seq 1
+	seq_id = '0ad2d386-79e2-2212-9b40-43d081db442a'
+	g_trans = [1., 0., 0., 0.,
+	0., 1., 0., 0.,
+	0., 0., 1., 0.,
+	0., 0., 0., 1.]
+	f_beg = 0
+	f_end = 106
+	g_trans = np.array(g_trans).reshape(4, 4).T
+	output_path = '%s/%s'%(dir_output, seq_id)
+	folder = os.path.exists(output_path)
+	if not folder:
+		os.makedirs(output_path)
+	generate_seq(img_intrin, seq_id, g_trans, f_beg, f_end+1)
+	np.savetxt('%s/%s/calib.txt'%(dir_output, seq_id), img_intrin)
+	# seq 2
+	seq_id = '0ad2d389-79e2-2212-9b0a-5f0e6f4982b5'
+	g_trans = [0.46398162841796875, -0.88564765453338623, -0.018682058900594711, 0,
+	0.88583731651306152, 0.46378573775291443, 0.013984784483909607, 0,
+	-0.0037211207672953606, -0.023037942126393318, 0.99972784519195557, 0,
+	0.55887115001678467, 0.39800447225570679, 0.10449286550283432, 1]
+	f_beg = 0
+	f_end = 200
+	g_trans = np.array(g_trans).reshape(4, 4).T
+	output_path = '%s/%s'%(dir_output, seq_id)
+	folder = os.path.exists(output_path)
+	if not folder:
+		os.makedirs(output_path)
+	generate_seq(img_intrin, seq_id, g_trans, f_beg, f_end+1)
+	np.savetxt('%s/%s/calib.txt'%(dir_output, seq_id), img_intrin)
 	# restroom - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - # '''
 	
 
 	# home - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+	img_intrin = np.array([[176.594, 0, 114.613], [0, 240.808, 85.7915], [0, 0, 1]], dtype=np.float32)
+	# seq 1
+	seq_id = 'dcb6a32b-5526-23f1-9cbc-3d257a8096fa'
+	g_trans = [-0.98312866687774658, 0.18266454339027405, 0.0095770386978983879, 0,
+	-0.1827181875705719, -0.98315232992172241, -0.005055790301412344, 0, 
+	0.0084921745583415031, -0.0067203915677964687, 0.99994140863418579, 0,
+	2.86199951171875, -1.4074712991714478, -0.12345875799655914, 1]
+	f_beg = 0
+	f_end = 106
+	g_trans = np.array(g_trans).reshape(4, 4).T
+	output_path = '%s/%s'%(dir_output, seq_id)
+	folder = os.path.exists(output_path)
+	if not folder:
+		os.makedirs(output_path)
+	generate_seq(img_intrin, seq_id, g_trans, f_beg, f_end+1)
+	np.savetxt('%s/%s/calib.txt'%(dir_output, seq_id), img_intrin)
+	# seq 2
+	seq_id = 'dcb6a329-5526-23f1-9d81-7718f682269c'
+	g_trans = [-0.33231633901596069, -0.94307488203048706, 0.013266079127788544, 0, 
+	0.94316446781158447, -0.33224475383758545, 0.0073329056613147259, 0, 
+	-0.0025078938342630863, 0.014948934316635132, 0.99988508224487305, 0, 
+	-0.45759952068328857, -0.5762677788734436, -0.080425910651683807, 1]
+	f_beg = 0
+	f_end = 251
+	g_trans = np.array(g_trans).reshape(4, 4).T
+	output_path = '%s/%s'%(dir_output, seq_id)
+	folder = os.path.exists(output_path)
+	if not folder:
+		os.makedirs(output_path)
+	generate_seq(img_intrin, seq_id, g_trans, f_beg, f_end+1)
+	np.savetxt('%s/%s/calib.txt'%(dir_output, seq_id), img_intrin)
 	# home - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - # '''
 
 
